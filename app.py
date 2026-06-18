@@ -5,7 +5,7 @@ import urllib.parse
 from datetime import datetime
 import os
 
-# 1. إعدادات الصفحة الافتراضية للموقع (تظهر في التبويب فوق)
+# 1. إعدادات الصفحة الافتراضية للموقع
 st.set_page_config(page_title="سيستم الأستاذة إيناس معتمد", page_icon="📚", layout="wide")
 
 # إعدادات الحماية والتواصل الخاصة بالبشمهندس محمد أحمد
@@ -102,24 +102,34 @@ with tab1:
             
             # فحص الحالة المالية المباشرة للطالب في الخزنة
             cursor.execute("SELECT COUNT(*) FROM payments WHERE student_barcode = ? AND pay_type = 'اشتراك شهري'", (barcode,))
-            has_paid = cursor.fetchone()[0]
+            has_paid = cursor.fetchone()
             
             now = datetime.now()
             cursor.execute("INSERT INTO attendance (student_barcode, date, time) VALUES (?, ?, ?)", 
                            (barcode, now.strftime("%Y-%m-%d"), now.strftime("%H:%M:%S")))
             conn.commit()
             
-            if has_paid > 0:
+            if has_paid[0] > 0:
                 st.success(f"✅ حضور معتمد وآمن: {name} | المجموعة: {group_name} | (الحالة المالية: سدد الاشتراك بالكامل 👍)")
             else:
                 st.warning(f"⚠️ حضور مؤقت للمراجعة: {name} | المجموعة: {group_name} | 🛑 إنذار مالي: لم يسدد الاشتراك الشهري الحالي! 🛑")
             
-            # آلية توليد رابط الواتساب الجاهز للإرسال لولي الأمر بنقرة واحدة
+            # تنظيف رقم الهاتف ليتوافق مع صيغة واتساب العالمية (إزالة أي أصفار زائدة أو مسافات)
+            clean_phone = str(parent_phone).strip().replace(" ", "").replace("+", "")
+            if not clean_phone.startswith("20"):
+                if clean_phone.startswith("01"):
+                    clean_phone = "2" + clean_phone
+                else:
+                    clean_phone = "20" + clean_phone
+            
+            # آلية توليد رابط الواتساب المحدث (يعمل على الموبايل والكمبيوتر عبر تطبيق أو متصفح)
             message = f"تحية طيبة من مكتب الأستاذة إيناس معتمد (مدرسة اللغة العربية).\nنحيطكم علماً بأن الطالب(ة): {name} قد حضر الحصة اليوم في موعده تماماً وصعد إلى القاعة التعليمية.\n[السيستم الذكي من تصميم م. محمد أحمد - ت: {ENG_PHONE}]"
             encoded_message = urllib.parse.quote(message)
-            whatsapp_url = f"https://whatsapp.com{parent_phone}&text={encoded_message}"
             
-            st.markdown(f'<br><a href="{whatsapp_url}" target="_blank" style="background-color:#25D366; color:white; padding:12px 25px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:15px; display:inline-block; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">📱 اضغط هنا لإرسال رسالة الواتساب الفورية لولي الأمر</a>', unsafe_allow_html=True)
+            # تم التحديث إلى رابط wa.me الشامل والمستقر برمجياً
+            whatsapp_url = f"https://wa.me{clean_phone}?text={encoded_message}"
+            
+            st.markdown(f'<br><a href="{whatsapp_url}" target="_blank" style="background-color:#25D366; color:white; padding:15px 30px; text-decoration:none; border-radius:8px; font-weight:bold; font-size:16px; display:inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.15); border: 2px solid #fff;">📱 اضغط هنا لإرسال رسالة الواتساب الفورية لولي الأمر</a>', unsafe_allow_html=True)
         else:
             st.error(f"❌ خرق أمني: كارت باركود غير معروف أو مفقود البيانات من السجلات ({barcode})!")
         conn.close()
@@ -132,7 +142,7 @@ with tab2:
     with st.form("add_student_form", clear_on_submit=True):
         new_barcode = st.text_input("كود الباركود للطالب (امسح الكارت بالليزر أو اكتبه):")
         new_name = st.text_input("اسم الطالب رباعي بالكامل:")
-        new_phone = st.text_input("رقم هاتف ولي الأمر (مثال يبدأ بمفتاح الدولة مباشرة: 201096196849):")
+        new_phone = st.text_input("رقم هاتف ولي الأمر (اكتبه عادي مثل 01096196849 والسيستم هيعدله تلقائي):")
         new_group = st.text_input("المجموعة والميعاد التعليمي المحدد للطالب:")
         submit_btn = st.form_submit_button("💾 حفظ وتأكيد بيانات الطالب وتفعيل الكارت بالخلفية")
         
@@ -159,7 +169,7 @@ with tab3:
     pay_amount = st.number_input("المبلغ المالي المستلم نقداً (جنيه مصري):", min_value=0.0, step=50.0)
     pay_type = st.selectbox("نوع وبند الدفع المعين بالخزينة:", ["اشتراك شهري", "حساب بالحصة", "ثمن مذكرة / كتاب"])
     
-    if st.button("💵 تأكيد الإيداع الفوري في الخزنة وتوليد الإيصال البنكي"):
+    if st.button("💵 تأكيد الإيداع في الخزنة وتوليد الإيصال البنكي"):
         if pay_barcode and pay_amount > 0:
             conn = sqlite3.connect('ar_teacher_website.db')
             cursor = conn.cursor()
@@ -196,13 +206,3 @@ with tab3:
 
 # --- [تبويب 4]: التقارير والإحصائيات المالية الإجمالية ---
 with tab4:
-    st.markdown("<div style='direction:rtl; text-align:right;'>", unsafe_allow_html=True)
-    st.header("📊 التقارير والإحصائيات الإجمالية المقيدة بالسنتر")
-    conn = sqlite3.connect('ar_teacher_website.db')
-    cursor = conn.cursor()
-    
-    cursor.execute("SELECT COUNT(*) FROM students")
-    total_students = cursor.fetchone()[0]
-    
-    cursor.execute("SELECT SUM(amount) FROM payments")
-    res = cursor.fetchone()[0]
