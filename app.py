@@ -2,18 +2,17 @@ import streamlit as st
 import sqlite3
 import pandas as pd
 import urllib.parse
-import webbrowser
 from datetime import datetime
 import os
 
-# إعدادات الصفحة الافتراضية للموقع
+# 1. إعدادات الصفحة الافتراضية للموقع (تظهر في التبويب فوق)
 st.set_page_config(page_title="سيستم الأستاذة إيناس معتمد", page_icon="📚", layout="wide")
 
-# إعدادات الحماية والتواصل
+# إعدادات الحماية والتواصل الخاصة بالبشمهندس محمد أحمد
 SYSTEM_PASSWORD = "123"
 ENG_PHONE = "01096196849"
 
-# تأسيس قاعدة البيانات المحلية للموقع
+# 2. تأسيس قاعدة البيانات المحلية للموقع وتحديث الجداول
 def init_db():
     conn = sqlite3.connect('ar_teacher_website.db')
     cursor = conn.cursor()
@@ -47,29 +46,34 @@ def init_db():
 
 init_db()
 
-# --- الهيدر الرئيسي للموقع ---
-    <div style="background-color:#1e3799;padding:15px;border-radius:10px;text-align:center;color:white;direction:rtl;">
-        <h2>✨ نظام إدارة السنتر والمراقبة الأمنية المتكاملة - الأستاذة إيناس معتمد ✨</h2>
-        <h4>👨‍💻 تصميم وتطوير البشمهندس: محمد أحمد محمد علي | للتواصل والدعم الفني: {ENG_PHONE}</h4>
+# --- 3. الهيدر الرئيسي الملكي للموقع بتصميم البشمهندس محمد أحمد ---
+st.markdown(f"""
+    <div style="background-color:#1e3799; padding:20px; border-radius:12px; text-align:center; color:white; direction:rtl; margin-bottom:25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <h2 style="margin:0; font-family:Arial; font-weight:bold;">✨ نظام إدارة السنتر والمراقبة الأمنية المتكاملة - الأستاذة إيناس معتمد ✨</h2>
+        <h4 style="margin:10px 0 0 0; font-family:Arial; color:#f5f6fa; font-weight:normal;">👨‍💻 تصميم وتطوير البشمهندس: محمد أحمد محمد علي | للتواصل والدعم الفني: {ENG_PHONE}</h4>
     </div>
-""", unsafe_allow_color=True, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
-# --- نظام قفل الموقع بكلمة سر ---
+# --- 4. نظام حماية وجدار الحماية للموقع بكلمة سر ---
 if "authenticated" not in st.session_state:
     st.session_state["authenticated"] = False
 
 if not st.session_state["authenticated"]:
-    st.subheader("🔐 برجاء تسجيل الدخول لحماية بيانات السنتر:")
-    password_input = st.text_input("أدخل كلمة المرور:", type="password")
-    if st.button("تأكيد الهوية ودخول الموقع"):
+    st.markdown("<div style='direction:rtl; text-align:right;'>", unsafe_allow_html=True)
+    st.subheader("🔐 نظام الأمان: برجاء تسجيل الدخول لفتح لوحة تحكم السنتر:")
+    password_input = st.text_input("أدخل كلمة المرور الفعالة للسيستم:", type="password")
+    
+    if st.button("تأكيد صلاحية الدخول للموقع"):
         if password_input == SYSTEM_PASSWORD:
             st.session_state["authenticated"] = True
             st.rerun()
         else:
-            st.error("❌ كلمة السر غير صحيحة! لا يمكن فتح الموقع.")
+            st.error("❌ خرق أمني: كلمة السر غير صحيحة! لا يمكن فتح الموقع.")
+    st.markdown("</div>", unsafe_allow_html=True)
     st.stop()
 
-# --- تبويبات الموقع الرئيسي ---
+# --- 5. تبويبات وتفرعات الموقع لسهولة التنقل الفوري ---
+st.markdown("<div style='direction:rtl; text-align:right;'>", unsafe_allow_html=True)
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "🛡️ بوابات الحضور الذكية والإنذار", 
     "👤 تسجيل الطلاب وتوليد الباركود", 
@@ -77,13 +81,14 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "📊 التقارير المالية والإحصائيات الإجمالية", 
     "📋 كشف حسابات الطلاب والتحكم الأمني"
 ])
+st.markdown("</div>", unsafe_allow_html=True)
 
-# --- 1. بوابات الحضور والإنذار المالي ---
+# --- [تبويب 1]: بوابات الحضور والإنذار المالي الفوري ---
 with tab1:
-    st.header("🎯 رصد حضور الطلاب بالباركود")
+    st.markdown("<div style='direction:rtl; text-align:right;'>", unsafe_allow_html=True)
+    st.header("🎯 رصد حضور الطلاب الفوري بالباركود")
     
-    # حيلة برمجية لجعل التركيز على خانة الباركود دائماً
-    barcode = st.text_input("اضغط هنا ثم امسح كارت الباركود بالليزر:", key="attendance_barcode", value="")
+    barcode = st.text_input("اضغط داخل الخانة أولاً، ثم امسح كارت الباركود بالليزر:", key="attendance_barcode", value="")
     
     if barcode:
         conn = sqlite3.connect('ar_teacher_website.db')
@@ -95,7 +100,7 @@ with tab1:
         if student:
             name, parent_phone, group_name = student
             
-            # فحص الدفع المالي
+            # فحص الحالة المالية المباشرة للطالب في الخزنة
             cursor.execute("SELECT COUNT(*) FROM payments WHERE student_barcode = ? AND pay_type = 'اشتراك شهري'", (barcode,))
             has_paid = cursor.fetchone()[0]
             
@@ -105,29 +110,31 @@ with tab1:
             conn.commit()
             
             if has_paid > 0:
-                st.success(f"✅ حضور معتمد: {name} | {group_name} | (الحالة المالية: سدد الاشتراك بالكامل 👍)")
+                st.success(f"✅ حضور معتمد وآمن: {name} | المجموعة: {group_name} | (الحالة المالية: سدد الاشتراك بالكامل 👍)")
             else:
-                st.warning(f"⚠️ حضور مؤقت: {name} | {group_name} | 🛑 إنذار مالي: لم يسدد الاشتراك الشهري الحالي! 🛑")
+                st.warning(f"⚠️ حضور مؤقت للمراجعة: {name} | المجموعة: {group_name} | 🛑 إنذار مالي: لم يسدد الاشتراك الشهري الحالي! 🛑")
             
-            # إنشاء رابط الواتساب التلقائي لولي الأمر
+            # آلية توليد رابط الواتساب الجاهز للإرسال لولي الأمر بنقرة واحدة
             message = f"تحية طيبة من مكتب الأستاذة إيناس معتمد (مدرسة اللغة العربية).\nنحيطكم علماً بأن الطالب(ة): {name} قد حضر الحصة اليوم في موعده تماماً وصعد إلى القاعة التعليمية.\n[السيستم الذكي من تصميم م. محمد أحمد - ت: {ENG_PHONE}]"
             encoded_message = urllib.parse.quote(message)
             whatsapp_url = f"https://whatsapp.com{parent_phone}&text={encoded_message}"
             
-            st.markdown(f'<a href="{whatsapp_url}" target="_blank" style="background-color:#25D366;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;font-weight:bold;">📱 اضغط هنا لإرسال رسالة الواتساب الفورية لولي الأمر</a>', unsafe_allow_html=True)
+            st.markdown(f'<br><a href="{whatsapp_url}" target="_blank" style="background-color:#25D366; color:white; padding:12px 25px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:15px; display:inline-block; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">📱 اضغط هنا لإرسال رسالة الواتساب الفورية لولي الأمر</a>', unsafe_allow_html=True)
         else:
-            st.error(f"❌ خرق أمني: كارت باركود غير معروف أو مفقود البيانات ({barcode})!")
+            st.error(f"❌ خرق أمني: كارت باركود غير معروف أو مفقود البيانات من السجلات ({barcode})!")
         conn.close()
+    st.markdown("</div>", unsafe_allow_html=True)
 
-# --- 2. تسجيل الطلاب الجدد ---
+# --- [تبويب 2]: تسجيل الطلاب الجدد وتوليد الباركود ---
 with tab2:
-    st.header("👤 إضافة طالب جديد في المجموعات")
+    st.markdown("<div style='direction:rtl; text-align:right;'>", unsafe_allow_html=True)
+    st.header("👤 إضافة وتكويد طالب جديد في المجموعات")
     with st.form("add_student_form", clear_on_submit=True):
-        new_barcode = st.text_input("كود الباركود للطالب:")
+        new_barcode = st.text_input("كود الباركود للطالب (امسح الكارت بالليزر أو اكتبه):")
         new_name = st.text_input("اسم الطالب رباعي بالكامل:")
-        new_phone = st.text_input("رقم هاتف ولي الأمر (مثال يبدأ بمفتاح الدولة: 201096196849):")
-        new_group = st.text_input("المجموعة والميعاد التعليمي المحدد:")
-        submit_btn = st.form_submit_button("💾 حفظ وتأكيد بيانات الطالب وتفعيل الكارت")
+        new_phone = st.text_input("رقم هاتف ولي الأمر (مثال يبدأ بمفتاح الدولة مباشرة: 201096196849):")
+        new_group = st.text_input("المجموعة والميعاد التعليمي المحدد للطالب:")
+        submit_btn = st.form_submit_button("💾 حفظ وتأكيد بيانات الطالب وتفعيل الكارت بالخلفية")
         
         if submit_btn:
             if new_barcode and new_name and new_phone:
@@ -136,21 +143,23 @@ with tab2:
                 try:
                     cursor.execute("INSERT INTO students VALUES (?, ?, ?, ?)", (new_barcode, new_name, new_phone, new_group))
                     conn.commit()
-                    st.success(f"🎉 تم تسجيل الطالب {new_name} بنجاح وتأمين كارت الباركود!")
+                    st.success(f"🎉 تم تسجيل الطالب {new_name} بنجاح وتأمين كارت الباركود الخاص به للرصد الافتراضي!")
                 except sqlite3.IntegrityError:
-                    st.error("🛑 خطأ تكرار أمني: هذا الباركود مسجل لطالب آخر بالفعل!")
+                    st.error("🛑 خطأ تكرار أمني: هذا الباركود مسجل ومربوط بطالب آخر مسبقاً!")
                 conn.close()
             else:
-                st.error("⚠️ برجاء كتابة البيانات الأساسية أولاً!")
+                st.error("⚠️ برجاء كتابة البيانات الحيوية والأساسية أولاً!")
+    st.markdown("</div>", unsafe_allow_html=True)
 
-# --- 3. إدارة الخزنة والإيصالات ---
+# --- [تبويب 3]: إدارة الخزنة والإيصالات الحية ---
 with tab3:
-    st.header("💰 إدارة المدفوعات والخزنة")
-    pay_barcode = st.text_input("امسح باركود الطالب لتسجيل الدفع:", key="pay_barcode")
-    pay_amount = st.number_input("المبلغ المالي المستلم (جنيه مصري):", min_value=0.0, step=50.0)
-    pay_type = st.selectbox("نوع وبند الدفع المعين:", ["اشتراك شهري", "حساب بالحصة", "ثمن مذكرة / كتاب"])
+    st.markdown("<div style='direction:rtl; text-align:right;'>", unsafe_allow_html=True)
+    st.header("💰 إدارة المدفوعات والقيود المالية المودعة")
+    pay_barcode = st.text_input("امسح باركود الطالب لتسديد الفلوس الحالية:", key="pay_barcode")
+    pay_amount = st.number_input("المبلغ المالي المستلم نقداً (جنيه مصري):", min_value=0.0, step=50.0)
+    pay_type = st.selectbox("نوع وبند الدفع المعين بالخزينة:", ["اشتراك شهري", "حساب بالحصة", "ثمن مذكرة / كتاب"])
     
-    if st.button("💵 تأكيد الإيداع في الخزنة وتوليد الإيصال المالي"):
+    if st.button("💵 تأكيد الإيداع الفوري في الخزنة وتوليد الإيصال البنكي"):
         if pay_barcode and pay_amount > 0:
             conn = sqlite3.connect('ar_teacher_website.db')
             cursor = conn.cursor()
@@ -164,29 +173,31 @@ with tab3:
                                (pay_barcode, pay_amount, pay_type, now_date))
                 conn.commit()
                 
-                st.success("📝 تم قيد الفلوس بالخزنة بنجاح!")
+                st.success("📝 تم قيد وتحصين الفلوس بالخزنة المركزية بنجاح!")
                 st.code(f"""
-=========================================
-         إيصال استلام نقدية معتمد        
-=========================================
+=================================================
+         إيصال استلام نقدية معتمد وتوثيق مالي       
+=================================================
 المكتب التعليمي للأستاذة: إيناس معتمد
 اسم الطالب الثلاثي: {name}
-المجموعة الدراسية: {group}
+المجموعة الدراسية المربوطة: {group}
 المبلغ المسدد نقداً: {pay_amount} جنيهاً مصرياً لا غير
 نوع وبند المعاملة المودعة: {pay_type}
 تاريخ ونظام التوثيق: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-تطوير البرمجيات: م. محمد أحمد محمد علي
-=========================================
+تطوير وهندسة البرمجيات: م. محمد أحمد محمد علي
+=================================================
                 """)
             else:
                 st.error("❌ كود الطالب غير صحيح أو لا يوجد سجل بهذا الباركود!")
             conn.close()
         else:
-            st.error("⚠️ برجاء ملء خانة الباركود والقيمة المالية المستلمة!")
+            st.error("⚠️ برجاء ملء خانة الباركود والقيمة المالية المستلمة بالشكل الصحيح!")
+    st.markdown("</div>", unsafe_allow_html=True)
 
-# --- 4. التقارير والإحصائيات المالية ---
+# --- [تبويب 4]: التقارير والإحصائيات المالية الإجمالية ---
 with tab4:
-    st.header("📊 التقارير والإحصائيات الإجمالية")
+    st.markdown("<div style='direction:rtl; text-align:right;'>", unsafe_allow_html=True)
+    st.header("📊 التقارير والإحصائيات الإجمالية المقيدة بالسنتر")
     conn = sqlite3.connect('ar_teacher_website.db')
     cursor = conn.cursor()
     
@@ -195,39 +206,3 @@ with tab4:
     
     cursor.execute("SELECT SUM(amount) FROM payments")
     res = cursor.fetchone()[0]
-    total_money = res if res is not None else 0.0
-    
-    cursor.execute("SELECT COUNT(*) FROM attendance")
-    total_attendance = cursor.fetchone()[0]
-    conn.close()
-    
-    col1, col2, col3 = st.columns(3)
-    col1.metric("📊 عدد الطلاب المسجلين", f"{total_students} طالب")
-    col2.metric("💰 دخل الخزنة الفعلي", f"{total_money:.2f} جنيه")
-    col3.metric("📝 عدد عمليات تسجيل الحضور", f"{total_attendance} عملية")
-
-# --- 5. كشف حسابات الطلاب والتحكم والـ Excel ---
-with tab5:
-    st.header("📋 لوحة المراقبة الإدارية واستخراج التقارير")
-    conn = sqlite3.connect('ar_teacher_website.db')
-    df_students = pd.read_sql_query("SELECT barcode AS [الباركود], name AS [اسم الطالب], parent_phone AS [رقم ولي الأمر], group_name AS [المجموعة] FROM students", conn)
-    conn.close()
-    
-    st.subheader("👥 كشف الطلاب المسجلين حالياً:")
-    st.dataframe(df_students, use_container_width=True)
-    
-    # زر استخراج لـ Excel مباشرة من المتصفح
-    st.subheader("📥 تحميل الكشوفات")
-    if not df_students.empty:
-        # تحويل البيانات بصيغة مخصصة للتحميل من الموقع
-        @st.cache_data
-        def convert_df(df):
-            return df.to_csv(index=False).encode('utf-8-sig')
-        
-        csv = convert_df(df_students)
-        st.download_button(
-            label="📥 اضغط هنا لتحميل كشف الطلاب بصيغة Excel (CSV)",
-            data=csv,
-            file_name='كشف_طلاب_الأستاذة_إيناس.csv',
-            mime='text/csv',
-        )
