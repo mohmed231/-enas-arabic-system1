@@ -114,7 +114,7 @@ with tab1:
             else:
                 st.warning(f"⚠️ حضور مؤقت للمراجعة: {name} | المجموعة: {group_name} | 🛑 إنذار مالي: لم يسدد الاشتراك الشهري الحالي! 🛑")
             
-            # تنظيف رقم الهاتف ليتوافق مع صيغة واتساب العالمية (إزالة أي أصفار زائدة أو مسافات)
+            # تنظيف رقم الهاتف ليتوافق مع صيغة واتساب العالمية
             clean_phone = str(parent_phone).strip().replace(" ", "").replace("+", "")
             if not clean_phone.startswith("20"):
                 if clean_phone.startswith("01"):
@@ -122,11 +122,9 @@ with tab1:
                 else:
                     clean_phone = "20" + clean_phone
             
-            # آلية توليد رابط الواتساب المحدث (يعمل على الموبايل والكمبيوتر عبر تطبيق أو متصفح)
+            # آلية توليد رابط الواتساب المحدث
             message = f"تحية طيبة من مكتب الأستاذة إيناس معتمد (مدرسة اللغة العربية).\nنحيطكم علماً بأن الطالب(ة): {name} قد حضر الحصة اليوم في موعده تماماً وصعد إلى القاعة التعليمية.\n[السيستم الذكي من تصميم م. محمد أحمد - ت: {ENG_PHONE}]"
             encoded_message = urllib.parse.quote(message)
-            
-            # تم التحديث إلى رابط wa.me الشامل والمستقر برمجياً
             whatsapp_url = f"https://wa.me{clean_phone}?text={encoded_message}"
             
             st.markdown(f'<br><a href="{whatsapp_url}" target="_blank" style="background-color:#25D366; color:white; padding:15px 30px; text-decoration:none; border-radius:8px; font-weight:bold; font-size:16px; display:inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.15); border: 2px solid #fff;">📱 اضغط هنا لإرسال رسالة الواتساب الفورية لولي الأمر</a>', unsafe_allow_html=True)
@@ -206,3 +204,5 @@ with tab3:
 
 # --- [تبويب 4]: التقارير والإحصائيات المالية الإجمالية ---
 with tab4:
+    st.markdown("<div style='direction:rtl; text-align:right;'>", unsafe_allow_html=True)
+    st.header("📊 التقارير والإحصائيات الإجمالية المقيدة بالسنتر")
