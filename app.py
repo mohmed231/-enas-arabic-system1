@@ -48,7 +48,6 @@ def init_db():
 init_db()
 
 # --- الهيدر الرئيسي للموقع ---
-st.markdown(f"""
     <div style="background-color:#1e3799;padding:15px;border-radius:10px;text-align:center;color:white;direction:rtl;">
         <h2>✨ نظام إدارة السنتر والمراقبة الأمنية المتكاملة - الأستاذة إيناس معتمد ✨</h2>
         <h4>👨‍💻 تصميم وتطوير البشمهندس: محمد أحمد محمد علي | للتواصل والدعم الفني: {ENG_PHONE}</h4>
